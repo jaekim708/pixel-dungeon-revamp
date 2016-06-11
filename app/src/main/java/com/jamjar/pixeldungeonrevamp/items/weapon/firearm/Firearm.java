@@ -39,6 +39,7 @@ import com.jamjar.pixeldungeonrevamp.utils.GLog;
 import com.jamjar.pixeldungeonrevamp.windows.WndBag;
 import com.jamjar.pixeldungeonrevamp.windows.WndItem;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 
 import java.util.ArrayList;
@@ -258,4 +259,24 @@ public abstract class Firearm extends Weapon {
 
         curUser.spendAndNext(DLY);
     }
+
+    private static final String AMMO     = "ammo";
+
+    @Override
+    public void storeInBundle( Bundle bundle ) {
+        super.storeInBundle( bundle );
+        bundle.put(AMMO, ammo);
+    }
+
+    @Override
+    public void restoreFromBundle( Bundle bundle ) {
+        super.restoreFromBundle( bundle );
+        ammo = bundle.getInt(AMMO);
+    }
+
+    @Override
+    public String status() {
+        return Integer.toString(ammo);
+    }
+
 }

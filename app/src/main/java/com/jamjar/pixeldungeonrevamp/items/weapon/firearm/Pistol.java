@@ -8,7 +8,12 @@ import com.watabou.utils.Random;
 
 /*
  TODO: Equipped pistol animation differs from quickslot pistol animation
+        - This is correct behavior - it's the same with Boomerang. Need to make melee attack
+          weak though
  TODO: Ammo counter doesn't go down
+ TODO: Separate Ammo class with enchantable bullets?
+ TODO: Quickslot animation has unlimited range
+ TODO: No ammo error text
  */
 public class Pistol extends Firearm {
 
