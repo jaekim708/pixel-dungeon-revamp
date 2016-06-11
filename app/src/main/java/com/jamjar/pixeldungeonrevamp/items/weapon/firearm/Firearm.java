@@ -25,6 +25,10 @@ import com.jamjar.pixeldungeonrevamp.actors.Char;
 import com.jamjar.pixeldungeonrevamp.actors.hero.Hero;
 import com.jamjar.pixeldungeonrevamp.items.Item;
 import com.jamjar.pixeldungeonrevamp.items.weapon.Weapon;
+import com.jamjar.pixeldungeonrevamp.messages.Messages;
+import com.jamjar.pixeldungeonrevamp.scenes.GameScene;
+import com.jamjar.pixeldungeonrevamp.windows.WndBag;
+import com.jamjar.pixeldungeonrevamp.windows.WndItem;
 
 /*
   Can't become heavier or lighter
@@ -41,6 +45,7 @@ public class Firearm extends Weapon {
     private float reload_spd;
     private int range;
     private int ammo;
+    public static final String AC_SHOOT = "SHOOT";
 
     public Firearm( int tier, float acu, float dly, float reload_spd, int range, int ammo) {
         super();
@@ -120,6 +125,31 @@ public class Firearm extends Weapon {
     @Override
     public int reachFactor(Hero hero) {
         return this.range;
+    }
+
+    @Override
+    public void execute(Hero hero, String action) {
+
+        super.execute(hero, action);
+        if (action.equals(AC_SHOOT)){
+
+        }
+    }
+
+    @Override
+    public String info() {
+
+        String info = desc();
+
+        info += "\n\n" + Messages.get( Weapon.class, "avg_dmg",(min() + (max() - min()) / 2));
+
+        if (STR > Dungeon.hero.STR()) {
+            info += Messages.get(Weapon.class, "too_heavy");
+        }
+
+        info += "\n\n" + Messages.get(Firearm.class, "distance");
+
+        return info;
     }
 
 }

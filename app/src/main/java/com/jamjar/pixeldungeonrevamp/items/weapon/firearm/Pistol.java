@@ -15,6 +15,7 @@ public class Pistol extends Firearm {
 
         stackable = false;
 
+        defaultAction = AC_SHOOT;
         unique = true;
         bones = false;
     }
