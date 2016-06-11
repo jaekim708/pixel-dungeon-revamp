@@ -10,10 +10,10 @@ import com.watabou.utils.Random;
  TODO: Equipped pistol animation differs from quickslot pistol animation
         - This is correct behavior - it's the same with Boomerang. Need to make melee attack
           weak though
- TODO: Ammo counter doesn't go down
  TODO: Separate Ammo class with enchantable bullets?
- TODO: Quickslot animation has unlimited range
+        - Pick up enchanted ammo, could also add in a bullet holster like the wand bag, seed bag, etc
  TODO: No ammo error text
+ TODO: If the character isn't in range to hit the target, it should auto-move the character
  */
 public class Pistol extends Firearm {
 
@@ -42,7 +42,7 @@ public class Pistol extends Firearm {
         if (ch != null) {
             ch.damage(Random.NormalIntRange(min(), max()), this);
 
-            ch.sprite.burst(0xFF000000, level() / 2 + 2); // bloodspurt?
+            ch.sprite.burst(0xFFFF0000, level() / 2 + 2); // bloodspurt?
         }
     }
 }

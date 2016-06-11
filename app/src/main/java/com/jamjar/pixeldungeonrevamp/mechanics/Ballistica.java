@@ -39,6 +39,7 @@ public class Ballistica {
 	public static final int STOP_TARGET = 1; //ballistica will stop at the target cell
 	public static final int STOP_CHARS = 2; //ballistica will stop on first char hit
 	public static final int STOP_TERRAIN = 4; //ballistica will stop on terrain(LOS blocking, impassable, etc.)
+	public static final int STOP_DIST = 8; // ballistica will stop after a certain distance traveled
 
 	public static final int PROJECTILE =  	STOP_TARGET	| STOP_CHARS	| STOP_TERRAIN;
 
@@ -46,17 +47,23 @@ public class Ballistica {
 
 	public static final int WONT_STOP =     0;
 
-
-	public Ballistica( int from, int to, int params ){
+	public Ballistica(int from, int to, int params, int maxDist){
 		sourcePos = from;
-		build(from, to, (params & STOP_TARGET) > 0, (params & STOP_CHARS) > 0, (params & STOP_TERRAIN) > 0);
+		build(from, to, (params & STOP_TARGET) > 0, (params & STOP_CHARS) > 0,
+				(params & STOP_TERRAIN) > 0, maxDist);
 		if (collisionPos != null)
 			dist = path.indexOf( collisionPos );
 		else
 			collisionPos = path.get( dist=path.size()-1 );
 	}
 
-	private void build( int from, int to, boolean stopTarget, boolean stopChars, boolean stopTerrain ) {
+	public Ballistica(int from, int to, int params){
+		this(from, to, params, -1);
+	}
+
+
+	private void build( int from, int to, boolean stopTarget,
+						boolean stopChars, boolean stopTerrain, int maxDist) {
 		int w = Level.WIDTH;
 
 		int x0 = from % w;
@@ -97,6 +104,8 @@ public class Ballistica {
 		int cell = from;
 
 		int err = dA / 2;
+
+		int pathCount = 0;
 		while (Level.insideMap(cell)) {
 
 			//if we're in a wall, collide with the previous cell along the path.
@@ -119,6 +128,9 @@ public class Ballistica {
 				err = err - dA;
 				cell = cell + stepB;
 			}
+			pathCount++;
+			if (pathCount == maxDist)
+				break;
 		}
 	}
 

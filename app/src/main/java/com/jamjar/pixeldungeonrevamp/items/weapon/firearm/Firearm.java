@@ -61,7 +61,7 @@ public abstract class Firearm extends Weapon {
     private int ammo;
     public static final String AC_SHOOT = "SHOOT";
 
-    protected int collisionProperties = Ballistica.MAGIC_BOLT;
+    protected int collisionProperties = Ballistica.PROJECTILE;
 
     public Firearm( int tier, float acu, float dly, float reload_spd, int range, int ammo) {
         super();
@@ -183,7 +183,9 @@ public abstract class Firearm extends Weapon {
 
                 final Firearm curFirearm = (Firearm)Firearm.curItem;
 
-                final Ballistica shot = new Ballistica( curUser.pos, target, curFirearm.collisionProperties);
+                final Ballistica shot = new Ballistica(curUser.pos, target,
+                        curFirearm.collisionProperties, curFirearm.range);
+
                 int cell = shot.collisionPos;
 
                 if (target == curUser.pos || cell == curUser.pos) {
