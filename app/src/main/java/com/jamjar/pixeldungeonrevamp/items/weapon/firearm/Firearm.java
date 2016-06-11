@@ -20,15 +20,28 @@
  */
 package com.jamjar.pixeldungeonrevamp.items.weapon.firearm;
 
+import com.jamjar.pixeldungeonrevamp.Assets;
 import com.jamjar.pixeldungeonrevamp.Dungeon;
+import com.jamjar.pixeldungeonrevamp.actors.Actor;
 import com.jamjar.pixeldungeonrevamp.actors.Char;
+import com.jamjar.pixeldungeonrevamp.actors.buffs.Invisibility;
 import com.jamjar.pixeldungeonrevamp.actors.hero.Hero;
+import com.jamjar.pixeldungeonrevamp.actors.hero.HeroClass;
+import com.jamjar.pixeldungeonrevamp.effects.MagicMissile;
 import com.jamjar.pixeldungeonrevamp.items.Item;
 import com.jamjar.pixeldungeonrevamp.items.weapon.Weapon;
+import com.jamjar.pixeldungeonrevamp.mechanics.Ballistica;
 import com.jamjar.pixeldungeonrevamp.messages.Messages;
+import com.jamjar.pixeldungeonrevamp.scenes.CellSelector;
 import com.jamjar.pixeldungeonrevamp.scenes.GameScene;
+import com.jamjar.pixeldungeonrevamp.ui.QuickSlotButton;
+import com.jamjar.pixeldungeonrevamp.utils.GLog;
 import com.jamjar.pixeldungeonrevamp.windows.WndBag;
 import com.jamjar.pixeldungeonrevamp.windows.WndItem;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Callback;
+
+import java.util.ArrayList;
 
 /*
   Can't become heavier or lighter
@@ -39,13 +52,15 @@ import com.jamjar.pixeldungeonrevamp.windows.WndItem;
 
  */
 
-public class Firearm extends Weapon {
+public abstract class Firearm extends Weapon {
 
     private int tier;
     private float reload_spd;
     private int range;
     private int ammo;
     public static final String AC_SHOOT = "SHOOT";
+
+    protected int collisionProperties = Ballistica.MAGIC_BOLT;
 
     public Firearm( int tier, float acu, float dly, float reload_spd, int range, int ammo) {
         super();
@@ -128,15 +143,6 @@ public class Firearm extends Weapon {
     }
 
     @Override
-    public void execute(Hero hero, String action) {
-
-        super.execute(hero, action);
-        if (action.equals(AC_SHOOT)){
-
-        }
-    }
-
-    @Override
     public String info() {
 
         String info = desc();
@@ -152,4 +158,104 @@ public class Firearm extends Weapon {
         return info;
     }
 
+    protected void fx( Ballistica bolt, Callback callback ) {
+        // TODO: New fx
+        MagicMissile.whiteLight( curUser.sprite.parent, bolt.sourcePos, bolt.collisionPos, callback );
+        // TODO: new sfx for shooting
+        Sample.INSTANCE.play( Assets.SND_ZAP );
+    }
+
+    @Override
+    public ArrayList<String> actions(Hero hero ) {
+        ArrayList<String> actions = super.actions( hero );
+        if (ammo > 0) {
+            actions.add( AC_SHOOT );
+        }
+
+        return actions;
+    }
+    protected static CellSelector.Listener shooter = new  CellSelector.Listener() {
+        @Override
+        public void onSelect( Integer target ) {
+
+            if (target != null) {
+
+                final Firearm curFirearm = (Firearm)Firearm.curItem;
+
+                final Ballistica shot = new Ballistica( curUser.pos, target, curFirearm.collisionProperties);
+                int cell = shot.collisionPos;
+
+                if (target == curUser.pos || cell == curUser.pos) {
+                    GLog.i( Messages.get(Firearm.class, "self_target") );
+                    return;
+                }
+
+                curUser.sprite.zap(cell);
+
+                //attempts to target the cell aimed at if something is there, otherwise targets the collision pos.
+                if (Actor.findChar(target) != null)
+                    QuickSlotButton.target(Actor.findChar(target));
+                else
+                    QuickSlotButton.target(Actor.findChar(cell));
+
+                if (curFirearm.ammo >= 1) {
+
+                    curUser.busy();
+
+                    // Firearm should never be cursed? (Isn't there some debuff that curses all equipment?) check this
+                    /*if (curFirearm.cursed){
+                        CursedFirearm.cursedZap(curFirearm, curUser, new Ballistica( curUser.pos, target, Ballistica.MAGIC_BOLT));
+                        if (!curFirearm.cursedKnown){
+                            curFirearm.cursedKnown = true;
+                            GLog.n(Messages.get(Firearm.class, "curse_discover", curFirearm.name()));
+                        }
+                    } else {*/
+                    curFirearm.fx(shot, new Callback() {
+                        public void call() {
+                            curFirearm.onShoot(shot);
+                            curFirearm.FirearmUsed();
+                        }
+                    });
+                    //}
+
+                    Invisibility.dispel();
+
+                } else {
+
+                    GLog.w( Messages.get(Firearm.class, "fizzles") );
+
+                }
+
+            }
+        }
+
+        @Override
+        public String prompt() {
+            return Messages.get(Firearm.class, "prompt");
+        }
+    };
+
+
+    @Override
+    public void execute( Hero hero, String action ) {
+
+        super.execute( hero, action );
+
+        if (action.equals( AC_SHOOT )) {
+
+            curUser = hero;
+            curItem = this;
+            GameScene.selectCell(shooter);
+
+        }
+    }
+
+    protected abstract void onShoot(Ballistica attack);
+
+    protected void FirearmUsed() {
+        ammo--;
+        updateQuickslot();
+
+        curUser.spendAndNext(DLY);
+    }
 }
