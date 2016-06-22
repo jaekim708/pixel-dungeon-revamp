@@ -78,6 +78,8 @@ import com.jamjar.pixeldungeonrevamp.items.scrolls.Scroll;
 import com.jamjar.pixeldungeonrevamp.items.scrolls.ScrollOfMagicMapping;
 import com.jamjar.pixeldungeonrevamp.items.scrolls.ScrollOfMagicalInfusion;
 import com.jamjar.pixeldungeonrevamp.items.scrolls.ScrollOfUpgrade;
+import com.jamjar.pixeldungeonrevamp.items.weapon.Weapon;
+import com.jamjar.pixeldungeonrevamp.items.weapon.firearm.Firearm;
 import com.jamjar.pixeldungeonrevamp.items.weapon.missiles.MissileWeapon;
 import com.jamjar.pixeldungeonrevamp.levels.Level;
 import com.jamjar.pixeldungeonrevamp.levels.Terrain;
@@ -243,7 +245,6 @@ public class Hero extends Char {
 	}
 
 	public boolean shoot( Char enemy, MissileWeapon wep ) {
-
 		rangedWeapon = wep;
 		boolean result = attack( enemy );
 		Invisibility.dispel();
@@ -303,7 +304,7 @@ public class Hero extends Char {
 		}
 		return dr;
 	}
-	
+
 	@Override
 	public int damageRoll() {
 		KindOfWeapon wep = rangedWeapon != null ? rangedWeapon : belongings.weapon;
@@ -323,12 +324,13 @@ public class Hero extends Char {
 			}
 		}
 		if (dmg < 0) dmg = 0;
+
 		if (subClass == HeroSubClass.BERSERKER){
 			dmg = Buff.affect(this, Berserk.class).damageFactor(dmg);
 		}
 		return buff( Fury.class ) != null ? (int)(dmg * 1.5f) : dmg;
 	}
-	
+
 	@Override
 	public float speed() {
 

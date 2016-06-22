@@ -126,12 +126,17 @@ public abstract class Char extends Actor {
 		if (hit( this, enemy, false )) {
 			
 			// FIXME
-			int dr = this instanceof Hero && ((Hero)this).rangedWeapon != null && ((Hero)this).subClass ==
-				HeroSubClass.SNIPER ? 0 : Random.IntRange( 0, enemy.dr() );
+			int dr = this instanceof Hero && ((Hero)this).rangedWeapon != null &&
+					((Hero)this).subClass == HeroSubClass.SNIPER ? 0 : Random.IntRange( 0, enemy.dr() );
 			
 			int dmg = damageRoll();
 			int effectiveDamage = Math.max( dmg - dr, 0 );
-			
+
+			if (this instanceof Hero && ((Hero)this).rangedWeapon != null &&
+					Level.distance( pos, enemy.pos ) == 1) {
+				effectiveDamage /= 2;
+			}
+
 			effectiveDamage = attackProc( enemy, effectiveDamage );
 			effectiveDamage = enemy.defenseProc( this, effectiveDamage );
 

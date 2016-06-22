@@ -14,6 +14,9 @@ import com.watabou.utils.Random;
         - Pick up enchanted ammo, could also add in a bullet holster like the wand bag, seed bag, etc
  TODO: No ammo error text
  TODO: If the character isn't in range to hit the target, it should auto-move the character
+        - If quickslot, move to max range, if attack, move to melee range
+ TODO: Firearm disappears on game load
+ TODO: Reload speed
  */
 public class Pistol extends Firearm {
 
@@ -30,20 +33,14 @@ public class Pistol extends Firearm {
     }
 
     public Pistol(int ammo) {
-        super(1, 1f, 1f, 1f, 3, ammo);
+        super(1, 1f, 1f, 1f, 1, ammo);
     }
 
     @Override
     protected void onShoot(Ballistica attack) {
-        // TODO: new sfx for getting shot
-        // handle weapon-specific special effects
-        Char ch = Actor.findChar(attack.collisionPos);
-
-        if (ch != null) {
-            ch.damage(Random.NormalIntRange(min(), max()), this);
-
-            ch.sprite.burst(0xFFFF0000, level() / 2 + 2); // bloodspurt?
-        }
+        // TODO: new sound for getting shot
+        // handle weapon-specific special effects?
+        super.onShoot(attack);
     }
 }
 

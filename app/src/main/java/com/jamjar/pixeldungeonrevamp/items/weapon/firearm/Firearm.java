@@ -41,6 +41,7 @@ import com.jamjar.pixeldungeonrevamp.windows.WndItem;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -86,12 +87,20 @@ public abstract class Firearm extends Weapon {
 
     @Override
     public int min() {
-        return minBase() + level() * tier;
+        return minBase() / 2;
     }
 
     @Override
     public int max() {
-        return maxBase() + level() * tier * 2;
+        return maxBase() / 2;
+    }
+
+    public int shootMin() {
+        return min() * 2 + level() * tier;
+    }
+
+    public int shootMax() {
+        return max() * 2  + level() * tier * 2;
     }
 
     @Override
@@ -134,7 +143,6 @@ public abstract class Firearm extends Weapon {
             Dungeon.quickslot.convertToPlaceholder(this);
             return;
         }
-        this.ammo--;
         super.proc( attacker, defender, damage );
     }
 
@@ -175,6 +183,7 @@ public abstract class Firearm extends Weapon {
 
         return actions;
     }
+
     protected static CellSelector.Listener shooter = new  CellSelector.Listener() {
         @Override
         public void onSelect( Integer target ) {
@@ -216,7 +225,7 @@ public abstract class Firearm extends Weapon {
                     curFirearm.fx(shot, new Callback() {
                         public void call() {
                             curFirearm.onShoot(shot);
-                            curFirearm.FirearmUsed();
+                            curFirearm.firearmUsed();
                         }
                     });
                     //}
@@ -249,13 +258,22 @@ public abstract class Firearm extends Weapon {
             curUser = hero;
             curItem = this;
             GameScene.selectCell(shooter);
+            updateQuickslot();
 
         }
     }
 
-    protected abstract void onShoot(Ballistica attack);
+    protected void onShoot(Ballistica attack){
+        Char ch = Actor.findChar(attack.collisionPos);
 
-    protected void FirearmUsed() {
+        if (ch != null) {
+            ch.damage(Random.NormalIntRange(shootMin(), shootMax()), this);
+
+            ch.sprite.burst(0xFFFF0000, level() / 2 + 2);
+        }
+    }
+
+    protected void firearmUsed() {
         ammo--;
         updateQuickslot();
 

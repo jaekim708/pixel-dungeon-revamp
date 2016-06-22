@@ -55,7 +55,7 @@ abstract public class Weapon extends KindOfWeapon {
 	private static final String TXT_TO_STRING		= "%s :%d";
 	
 	public int		STR	= 10;
-	public float	ACU	= 1;	// Accuracy modifier
+	public float	ACU	= 1f;	// Accuracy modifier
 	public float	DLY	= 1f;	// Speed modifier
 
 	public enum Imbue {
