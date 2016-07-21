@@ -243,7 +243,7 @@ public abstract class Firearm extends Weapon {
                 } else {
 
                     GLog.i("no ammo\n");
-                    GLog.w( Messages.get(Firearm.class, "fizzles") );
+                    GLog.w( Messages.get(Firearm.class, "no_ammo") );
 
                 }
 
@@ -256,6 +256,10 @@ public abstract class Firearm extends Weapon {
         }
     };
 
+    // I should make this a Buff instead, like wand charges. This way permanently sets a reload speed of 1 turn, inflexible
+    // Maybe have pistol have a reload speed of 2 and repeater rifle 1? Keep blunderbuss at 2?
+    String lastAction;
+    Item lastFirearm;
 
     @Override
     public void execute( Hero hero, String action ) {
@@ -263,13 +267,18 @@ public abstract class Firearm extends Weapon {
         super.execute( hero, action );
 
         if (action.equals( AC_SHOOT )) {
+            if (lastAction.equals(AC_SHOOT) && lastFirearm == curItem) {
 
-            curUser = hero;
-            curItem = this;
-            GameScene.selectCell(shooter);
-            updateQuickslot();
-
+            } else {
+                curUser = hero;
+                curItem = this;
+                GameScene.selectCell(shooter);
+                updateQuickslot();
+                lastFirearm = curItem;
+            }
         }
+
+        lastAction = action;
     }
 
     protected void onShoot(Ballistica attack){
