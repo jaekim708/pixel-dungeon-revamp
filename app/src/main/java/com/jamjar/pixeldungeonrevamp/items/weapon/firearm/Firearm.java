@@ -65,8 +65,6 @@ public abstract class Firearm extends Weapon {
     protected int collisionProperties = Ballistica.PROJECTILE;
 
     public Firearm( int tier, float acu, float dly, float reload_spd, int range, int ammo) {
-        super();
-
         this.tier = tier;
         this.reload_spd = reload_spd;
         this.range = range;
@@ -82,7 +80,11 @@ public abstract class Firearm extends Weapon {
     }
 
     protected int maxBase() {
-        return (int)((tier * tier - tier + 10) / ACU * DLY);
+        return (int)((tier * 2));
+    }
+
+    private int avgDmg(){
+        return (min() + (max() - min()) / 2);
     }
 
     @Override
@@ -101,6 +103,10 @@ public abstract class Firearm extends Weapon {
 
     public int shootMax() {
         return max() * 2  + level() * tier * 2;
+    }
+
+    private int avgShootDmg(){
+        return (shootMin() + (shootMax() - shootMin()) / 2);
     }
 
     @Override
@@ -147,28 +153,26 @@ public abstract class Firearm extends Weapon {
     }
 
     @Override
-    public int reachFactor(Hero hero) {
-        return this.range;
-    }
-
-    @Override
     public String info() {
 
         String info = desc();
 
-        info += "\n\n" + Messages.get( Weapon.class, "avg_dmg",(min() + (max() - min()) / 2));
+        info += "\n\n" + Messages.get(Firearm.class, "desc");
+
+        info += "\n\n" + Messages.get(Firearm.class, "avg_dmg", avgShootDmg(), avgDmg());
 
         if (STR > Dungeon.hero.STR()) {
             info += Messages.get(Weapon.class, "too_heavy");
         }
 
-        info += "\n\n" + Messages.get(Firearm.class, "distance");
+        info += "\n\n" + Messages.get(Firearm.class, "range", range);
 
         return info;
     }
 
     protected void fx( Ballistica bolt, Callback callback ) {
         // TODO: New fx
+        GLog.i("fx");
         MagicMissile.whiteLight( curUser.sprite.parent, bolt.sourcePos, bolt.collisionPos, callback );
         // TODO: new sfx for shooting
         Sample.INSTANCE.play( Assets.SND_ZAP );
@@ -180,17 +184,20 @@ public abstract class Firearm extends Weapon {
         if (ammo > 0) {
             actions.add( AC_SHOOT );
         }
-
+        GLog.i("actions: " + actions.toString());
         return actions;
     }
 
     protected static CellSelector.Listener shooter = new  CellSelector.Listener() {
         @Override
         public void onSelect( Integer target ) {
+            GLog.i("onSelect\n");
 
             if (target != null) {
 
                 final Firearm curFirearm = (Firearm)Firearm.curItem;
+
+                GLog.i("target. range is " + curFirearm.range);
 
                 final Ballistica shot = new Ballistica(curUser.pos, target,
                         curFirearm.collisionProperties, curFirearm.range);
@@ -198,7 +205,8 @@ public abstract class Firearm extends Weapon {
                 int cell = shot.collisionPos;
 
                 if (target == curUser.pos || cell == curUser.pos) {
-                    GLog.i( Messages.get(Firearm.class, "self_target") );
+                    GLog.i("self\n");
+                    GLog.i( Messages.get(Firearm.class, "self_target"));
                     return;
                 }
 
@@ -234,6 +242,7 @@ public abstract class Firearm extends Weapon {
 
                 } else {
 
+                    GLog.i("no ammo\n");
                     GLog.w( Messages.get(Firearm.class, "fizzles") );
 
                 }
@@ -264,6 +273,7 @@ public abstract class Firearm extends Weapon {
     }
 
     protected void onShoot(Ballistica attack){
+        GLog.i("ON SHOOT!");
         Char ch = Actor.findChar(attack.collisionPos);
 
         if (ch != null) {
@@ -300,3 +310,4 @@ public abstract class Firearm extends Weapon {
     }
 
 }
+

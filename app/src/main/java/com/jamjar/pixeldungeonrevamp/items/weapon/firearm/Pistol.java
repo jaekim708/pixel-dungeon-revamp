@@ -4,12 +4,14 @@ import com.jamjar.pixeldungeonrevamp.actors.Actor;
 import com.jamjar.pixeldungeonrevamp.actors.Char;
 import com.jamjar.pixeldungeonrevamp.mechanics.Ballistica;
 import com.jamjar.pixeldungeonrevamp.sprites.ItemSpriteSheet;
+import com.jamjar.pixeldungeonrevamp.utils.GLog;
 import com.watabou.utils.Random;
 
 /*
  TODO: Equipped pistol animation differs from quickslot pistol animation
         - This is correct behavior - it's the same with Boomerang. Need to make melee attack
           weak though
+ TODO: Pistol description needs shooting and melee damage descriptions
  TODO: Separate Ammo class with enchantable bullets?
         - Pick up enchanted ammo, could also add in a bullet holster like the wand bag, seed bag, etc
  TODO: No ammo error text
@@ -33,7 +35,8 @@ public class Pistol extends Firearm {
     }
 
     public Pistol(int ammo) {
-        super(1, 1f, 1f, 1f, 1, ammo);
+        super(1, 1f, 1f, 1f, 3, ammo);
+        GLog.i("pistol created");
     }
 
     @Override

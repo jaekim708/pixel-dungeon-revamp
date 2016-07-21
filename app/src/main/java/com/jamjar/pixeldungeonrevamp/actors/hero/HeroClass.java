@@ -42,7 +42,10 @@ import com.jamjar.pixeldungeonrevamp.items.weapon.missiles.Boomerang;
 import com.jamjar.pixeldungeonrevamp.items.weapon.missiles.Dart;
 import com.jamjar.pixeldungeonrevamp.items.weapon.firearm.Pistol;
 import com.jamjar.pixeldungeonrevamp.messages.Messages;
+import com.jamjar.pixeldungeonrevamp.utils.GLog;
 import com.watabou.utils.Bundle;
+
+import javax.microedition.khronos.opengles.GL;
 
 public enum HeroClass {
 
